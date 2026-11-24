@@ -1,0 +1,14 @@
+/* Loaded only when JavaScript is off (via <noscript>): the menu button
+   can't work, so the links wrap under the name instead. */
+@media (max-width: 959px) {
+  .nav-toggle { display: none !important; }
+  .site-header__inner { flex-wrap: wrap; padding-block: 12px; }
+  .site-nav {
+    position: static !important; height: auto !important; visibility: visible !important; opacity: 1 !important; transform: none !important;
+    flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 0; background: none; overflow: visible;
+  }
+  .site-nav ul { flex-direction: row; flex-wrap: wrap; gap: 4px 18px; }
+  .site-nav ul li { border: 0; }
+  .site-nav ul a { font: 500 1rem/1.4 var(--sans); padding: 6px 0; }
+  .site-nav__cta { align-self: auto; }
+}
