@@ -189,6 +189,27 @@ p + p { margin-top: 0.9em; }
 .media--wide { aspect-ratio: 21 / 9; }
 .media--portrait { aspect-ratio: 4 / 5; }
 
+/* Video in a media frame (home, Meet Mona): silent loop, then full clip. */
+.vid-figure { margin: 0; }
+.vid { position: relative; }
+.vid [hidden] { display: none !important; }
+.vid__el { display: block; width: 100%; height: 100%; object-fit: cover; background: var(--dark); }
+.vid__play { position: absolute; left: 16px; bottom: 16px; z-index: 1; min-height: 46px; padding: 0 20px; }
+.vid__icon { width: 12px; height: 12px; fill: currentColor; flex: none; }
+.vid__time { margin-left: 2px; padding-left: 10px; border-left: 1px solid rgba(29, 27, 28, 0.2); font-weight: 500; opacity: 0.7; font-variant-numeric: tabular-nums; }
+.vid__toggle {
+  position: absolute; top: 14px; right: 14px; z-index: 1;
+  display: grid; place-items: center; width: 38px; height: 38px; padding: 0;
+  border: 0; border-radius: 50%; color: #fff; background: rgba(29, 27, 28, 0.5);
+  cursor: pointer; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: background 0.2s;
+}
+.vid__toggle:hover { background: rgba(29, 27, 28, 0.72); }
+.vid__toggle:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.vid__toggle svg { width: 14px; height: 14px; fill: currentColor; }
+.vid__toggle .vid__resume, .vid.is-paused .vid__toggle .vid__pause { display: none; }
+.vid.is-paused .vid__toggle .vid__resume { display: block; }
+.vid-figure__cap { margin-top: 12px; font-size: 0.95rem; opacity: 0.82; }
+
 .tilt {
   position: relative; transform-style: preserve-3d;
   transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translate3d(0, var(--lift, 0px), 0);

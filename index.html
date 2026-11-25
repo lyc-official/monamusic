@@ -129,7 +129,16 @@
 </section>
 <section class="section" aria-labelledby="meet-h">
   <div class="wrap split">
-    <div class="split__media media media--portrait" data-reveal><picture><source type="image/webp" srcset="assets/img/mona-portrait-560.webp 560w, assets/img/mona-portrait-900.webp 900w, assets/img/mona-portrait-1300.webp 1300w" sizes="(min-width: 900px) 520px, 94vw"><img src="assets/img/mona-portrait-900.jpg" srcset="assets/img/mona-portrait-560.jpg 560w, assets/img/mona-portrait-900.jpg 900w, assets/img/mona-portrait-1300.jpg 1300w" sizes="(min-width: 900px) 520px, 94vw" width="1300" height="1625" alt="Portrait of Mona Lim, smiling." style="object-position:50% 30%" loading="lazy" decoding="async"></picture></div>
+    <div class="split__media" data-reveal><figure class="vid-figure">
+  <div class="vid media media--portrait" data-video data-src="assets/video/mona-teaching.mp4" data-preview="assets/video/mona-teaching-preview.mp4">
+    <video class="vid__el" controls preload="none" playsinline poster="assets/video/mona-teaching-poster.jpg" width="478" height="850" aria-label="Video: Mona teaching a music class at the piano" style="object-position:50% 42%">
+      <source src="assets/video/mona-teaching.mp4" type="video/mp4">
+    </video>
+    <button class="btn btn--white vid__play" type="button" data-video-play hidden><svg class="vid__icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.2v9.6l7.6-4.8z"/></svg>Watch with sound<span class="vid__time">2:23</span></button>
+    <button class="vid__toggle" type="button" data-video-toggle aria-label="Pause the silent preview" hidden><svg class="vid__pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 3h2.6v10H4.5zM8.9 3h2.6v10H8.9z"/></svg><svg class="vid__resume" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.2v9.6l7.6-4.8z"/></svg></button>
+  </div>
+  <figcaption class="vid-figure__cap">Mona teaching a music class.</figcaption>
+</figure></div>
     <div class="split__text">
       <h2 class="h2" id="meet-h" data-reveal>Meet Mona</h2>
       <div data-reveal style="--d:1"><p class="lead">Mona Lim is an educator who teaches piano and English.</p><p>She also performs on piano and keyboard, accompanies other musicians, and directs and choreographs. Her most recent opera was Stravinsky's <em>The Rake's Progress</em> with New Opera Singapore.</p></div>

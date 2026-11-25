@@ -315,6 +315,63 @@
     });
   })();
 
+  /* ---------- video: silent loop while on screen, full clip on request ----------
+     The loop pauses off screen, in background tabs and with the pause toggle.
+     It never starts for visitors who prefer reduced motion or save data;
+     they see the cover frame and the "Watch with sound" button. */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-video]"), function (box) {
+    var video = box.querySelector("video");
+    var playBtn = box.querySelector("[data-video-play]");
+    var toggle = box.querySelector("[data-video-toggle]");
+    if (!video || !playBtn) return;
+    var saveData = navigator.connection && navigator.connection.saveData;
+    var mode = "cover"; // cover | preview | full
+    var inView = false, userPaused = false;
+
+    video.controls = false;
+    playBtn.hidden = false;
+
+    var tryPlay = function () { var p = video.play(); if (p && p.catch) p.catch(function () {}); };
+    var syncPreview = function () {
+      if (mode !== "preview") return;
+      if (inView && !document.hidden && !userPaused) tryPlay(); else video.pause();
+    };
+
+    if (box.dataset.preview && !reduceMotion && !saveData && "IntersectionObserver" in window) {
+      mode = "preview";
+      video.muted = true;
+      video.loop = true;
+      video.src = box.dataset.preview;
+      if (toggle) toggle.hidden = false;
+      new IntersectionObserver(function (entries) {
+        inView = entries[0].isIntersecting;
+        syncPreview();
+      }, { threshold: 0.3 }).observe(box);
+      document.addEventListener("visibilitychange", syncPreview);
+    }
+
+    if (toggle) toggle.addEventListener("click", function () {
+      userPaused = !userPaused;
+      box.classList.toggle("is-paused", userPaused);
+      toggle.setAttribute("aria-label", userPaused ? "Play the silent preview" : "Pause the silent preview");
+      syncPreview();
+    });
+
+    playBtn.addEventListener("click", function () {
+      mode = "full";
+      video.pause();
+      video.loop = false;
+      video.muted = false;
+      video.src = box.dataset.src;
+      video.controls = true;
+      playBtn.hidden = true;
+      if (toggle) toggle.hidden = true;
+      box.classList.add("is-full");
+      tryPlay();
+      video.focus();
+    });
+  });
+
   /* ---------- WhatsApp button + chat pop-up ---------- */
   var wa = document.querySelector("[data-wa]");
   if (wa) (function () {
