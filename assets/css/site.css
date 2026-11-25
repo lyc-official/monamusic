@@ -586,6 +586,7 @@ main > .section--cta:last-child { padding-bottom: 0; }
 
 /* ---------- concerts: performing roles ---------- */
 .roles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(12px, 1.4vw, 18px); }
+.roles--6 { grid-template-columns: repeat(3, minmax(0, 1fr)); } /* two even rows */
 .roles__item { padding: 22px 20px 24px; }
 .roles__ico { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 16px; border-radius: 16px; background: rgba(163, 48, 44, 0.08); color: var(--paper); }
 .roles__ico .ico { width: 34px; height: 34px; }
