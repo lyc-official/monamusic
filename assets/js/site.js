@@ -162,14 +162,39 @@
     update();
   });
 
-  /* ---------- hero: photos cross-fade in place behind fixed text ---------- */
+  /* ---------- hero: slides cross-fade in place behind fixed text ----------
+     Photos show for 6 s; a video slide plays its silent loop (landscape or
+     portrait file to suit the screen) for its own length. Arrows, dots,
+     arrow keys and sideways swipes change the slide. */
   var gallery = document.querySelector("[data-gallery]");
   if (gallery) (function () {
     var frames = Array.prototype.slice.call(gallery.querySelectorAll("[data-frame]"));
     var dots = Array.prototype.slice.call(gallery.querySelectorAll("[data-dot]"));
     if (frames.length < 2) return;
     var INTERVAL = 6000, current = 0, timer = null, inView = true;
-    gallery.style.setProperty("--interval", INTERVAL + "ms");
+    var saveData = navigator.connection && navigator.connection.saveData;
+    var tall = window.matchMedia ? window.matchMedia("(orientation: portrait)") : null;
+
+    frames.forEach(function (f) {
+      var v = f.querySelector("video");
+      if (v) v.addEventListener("playing", function () { f.classList.add("is-playing"); });
+    });
+
+    // Plays the current slide's video (from the start when `fresh`); pauses the rest.
+    function syncVideos(fresh) {
+      frames.forEach(function (f, k) {
+        var v = f.querySelector("video");
+        if (!v) return;
+        if (k === current && !reduceMotion && !saveData && inView && !document.hidden) {
+          var want = tall && tall.matches ? v.getAttribute("data-portrait") : v.getAttribute("data-landscape");
+          if (v.getAttribute("src") !== want) { f.classList.remove("is-playing"); v.setAttribute("src", want); }
+          else if (fresh) { try { v.currentTime = 0; } catch (e) {} }
+          var p = v.play(); if (p && p.catch) p.catch(function () {});
+        } else {
+          v.pause();
+        }
+      });
+    }
 
     function show(i) {
       current = (i + frames.length) % frames.length;
@@ -181,24 +206,51 @@
         d.classList.toggle("is-current", k === current);
         if (k === current) d.setAttribute("aria-current", "true"); else d.removeAttribute("aria-current");
       });
-      restart();
+      restart(true);
     }
     // Switches automatically; holds while off-screen or in a background tab,
-    // and stays on the first photo for visitors who prefer reduced motion.
-    function restart() {
+    // and stays put for visitors who prefer reduced motion.
+    function restart(fresh) {
       clearTimeout(timer);
       gallery.removeAttribute("data-playing");
+      syncVideos(fresh === true);
       if (reduceMotion || !inView || document.hidden) return;
+      var wait = +frames[current].getAttribute("data-duration") || INTERVAL;
+      gallery.style.setProperty("--interval", wait + "ms");
       void gallery.offsetWidth; // restart the dot's progress fill
       gallery.setAttribute("data-playing", "");
-      timer = setTimeout(function () { show(current + 1); }, INTERVAL);
+      timer = setTimeout(function () { show(current + 1); }, wait);
     }
+
     dots.forEach(function (d, k) { d.addEventListener("click", function () { show(k); }); });
-    document.addEventListener("visibilitychange", restart);
+    var prev = gallery.querySelector("[data-prev]"), next = gallery.querySelector("[data-next]");
+    if (prev) prev.addEventListener("click", function () { show(current - 1); });
+    if (next) next.addEventListener("click", function () { show(current + 1); });
+    gallery.addEventListener("keydown", function (e) {
+      if (!e.target.closest || !e.target.closest(".showcase__pill")) return;
+      if (e.key === "ArrowLeft") { e.preventDefault(); show(current - 1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); show(current + 1); }
+    });
+    // Sideways swipe on touch screens (vertical drags still scroll the page).
+    var sx = null, sy = 0;
+    gallery.addEventListener("pointerdown", function (e) { if (e.pointerType !== "mouse") { sx = e.clientX; sy = e.clientY; } });
+    gallery.addEventListener("pointerup", function (e) {
+      if (sx === null) return;
+      var dx = e.clientX - sx, dy = e.clientY - sy;
+      sx = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) show(current + (dx < 0 ? 1 : -1));
+    });
+    gallery.addEventListener("pointercancel", function () { sx = null; });
+
+    document.addEventListener("visibilitychange", function () { restart(); });
+    if (tall) {
+      var onTurn = function () { syncVideos(true); };
+      if (tall.addEventListener) tall.addEventListener("change", onTurn); else if (tall.addListener) tall.addListener(onTurn);
+    }
     if ("IntersectionObserver" in window) {
       new IntersectionObserver(function (entries) { inView = entries[0].isIntersecting; restart(); }, { threshold: 0.3 }).observe(gallery);
     }
-    restart();
+    restart(true);
   })();
 
   /* ---------- full-size photo viewer for galleries ---------- */
