@@ -163,8 +163,8 @@
   });
 
   /* ---------- hero: slides cross-fade in place behind fixed text ----------
-     Photos show for 6 s; a video slide plays its silent loop (the phone
-     crop on small upright screens) for its own length. Arrows, dots,
+     Photos show for 6 s; a video slide plays its silent loop (landscape or
+     upright crop to suit the screen) for its own length. Arrows, dots,
      arrow keys and sideways swipes change the slide. */
   var gallery = document.querySelector("[data-gallery]");
   if (gallery) (function () {
@@ -173,8 +173,7 @@
     if (frames.length < 2) return;
     var INTERVAL = 6000, current = 0, timer = null, inView = true;
     var saveData = navigator.connection && navigator.connection.saveData;
-    var PHONE = "(orientation: portrait) and (max-width: 699px)"; // same as home.js and the CSS
-    var tall = window.matchMedia ? window.matchMedia(PHONE) : null;
+    var tall = window.matchMedia ? window.matchMedia("(orientation: portrait)") : null;
 
     frames.forEach(function (f) {
       var v = f.querySelector("video");
@@ -187,7 +186,7 @@
         var v = f.querySelector("video");
         if (!v) return;
         if (k === current && !reduceMotion && !saveData && inView && !document.hidden) {
-          var want = (tall && tall.matches && v.getAttribute("data-phone")) || v.getAttribute("data-src");
+          var want = tall && tall.matches ? v.getAttribute("data-portrait") : v.getAttribute("data-landscape");
           if (v.getAttribute("src") !== want) { f.classList.remove("is-playing"); v.setAttribute("src", want); }
           else if (fresh) { try { v.currentTime = 0; } catch (e) {} }
           var p = v.play(); if (p && p.catch) p.catch(function () {});
@@ -207,8 +206,6 @@
         d.classList.toggle("is-current", k === current);
         if (k === current) d.setAttribute("aria-current", "true"); else d.removeAttribute("aria-current");
       });
-      if (frames[current].classList.contains("frame--video")) gallery.setAttribute("data-video-slide", "");
-      else gallery.removeAttribute("data-video-slide");
       restart(true);
     }
     // Switches automatically; holds while off-screen or in a background tab,
